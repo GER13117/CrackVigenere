@@ -56,9 +56,9 @@ public class main {
             System.out.println(keyString);
             double offset = calcFreqDif(encodeString(encString, numberToKey(currentKey), false)); //gibt der Klasse calcFreqDif einen möglicherweise entschlüsselten String --> encodeString kriegt den verschlüsselten String und versucht ihn mit dem aktuellen Key zu entsclüsseln
 
-            if (offset > bestOffset) {
+            if (offset < bestOffset) {
                 bestOffset = offset;
-                //best = currentKey;
+                bestKey = currentKey;
             }
         }
 
