@@ -1,13 +1,16 @@
 public class main {
     public static void main(String[] args) {
-        String rawMessage = "Faust wird von Mephisto zum Hexentanz der Walpurgisnacht auf den Blocksberg gelockt. Sie geraten in eine Windsbraut, ein Gewimmel von Hexen, die zur Bergspitze hinauf reiten, wo der Teufel Hof hält. Faust wünscht sich, bis zum Gipfel vorzudringen: Dort strömt die Menge zu dem Bösen; Da muss sich manches Rätsel lösen. Mephisto aber überredet Faust, stattdessen an einer Hexenfeier teilzunehmen. Er bietet ihm an, dort als Fausts Kuppler zu fungieren. Bald ergehen sich beide im Tanz und anzüglichem Wechselgesang mit zwei lüsternen Hexen. Faust bricht den Tanz ab, als seiner Partnerin ein rotes Mäuschen aus dem Mund springt und ihm ein blasses, schönes Kind erscheint, das ihn an Gretchen erinnert und ein rotes Schnürchen um den Hals trägt (eine Vorausdeutung auf Gretchens Hinrichtung). Um Faust von diesem Zauberbild abzulenken, führt Mephisto ihn auf einen Hügel, wo ein Theaterstück aufgeführt werden soll.";
-        String cleanMessage = rawMessage.toLowerCase().replace("ü", "ue")
-                .replace("ö", "oe")
-                .replace("ä", "ae")
-                .replace("ß", "ss")
-                .replaceAll("[ ,.;:']","");
+        String rawMessage = "Faust wird von Mephisto zum Hexentanz der Walpurgisnacht auf den Blocksberg gelockt. Sie geraten in eine Windsbraut, ein Gewimmel von Hexen, die zur Bergspitze hinauf reiten, wo der Teufel Hof hält. Faust wünscht sich, bis zum Gipfel vorzudringen: Dort strömt die Menge zu dem Bösen; Da muss sich manches Rätsel lösen. Mephisto aber überredet Faust, stattdessen an einer Hexenfeier teilzunehmen. Er bietet ihm an, dort als Fausts Kuppler zu fungieren. Bald ergehen sich beide im Tanz und anzüglichem Wechselgesang mit zwei lüsternen Hexen. Faust bricht den Tanz ab, als seiner Partnerin ein rotes Mäuschen aus dem Mund springt und ihm ein blasses, schönes Kind erscheint, das ihn an Gretchen erinnert und ein rotes Schnürchen um den Hals trägt (eine Vorausdeutung auf Gretchens Hinrichtung). Um Faust von diesem Zauberbild abzulenken, führt Mephisto ihn auf einen Hügel, wo ein Theaterstück aufgeführt werden soll.".toUpperCase();
+        String cleanMessage = rawMessage.toUpperCase()
+                .replace("Ü", "UE")
+                .replace("Ö", "OE")
+                .replace("Ä", "AE")
+                .replace("ß", "SS") //Großes ß ?
+                .replaceAll("[ ,.;:'()]","");
         System.out.println(cleanMessage);
-        System.out.println(crackKey(cleanMessage, 4));
+        String key = "test".toUpperCase();
+        String encString = encodeString(cleanMessage, key, true);
+        crackKey(encString, 4);
 
 
     }
@@ -44,29 +47,64 @@ public class main {
         return currentKey < 0 ? "" : numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26); //TODO: verstehen wäre gut xD
     }
 
-    public static String crackKey( String encMessage, int maxKeyLength) {
+    public static String crackKey( String encString, int maxKeyLength) {
 
         long bestKey = 0;
-        double bestOffeset = Double.MAX_VALUE;
+        double bestOffset = Double.MAX_VALUE;
         for (long currentKey = 1; currentKey < Math.pow(27, maxKeyLength); currentKey++){
             String keyString = numberToKey(currentKey);
             System.out.println(keyString);
-            /*
-            double offset = calculateFrequencyOffset(new Vigenere(encMessage, keyString).decode TODO: Methode um den Unterschied der verschiedenen Buchstaben in ihrer Häufigkeit zu der der deutschen Sprache schreiben
-                                                                                                TODO: Entschlüsselmethode aus ViginereVerfahren übertragen
+            double offset = calcFreqDif(encodeString(encString, numberToKey(currentKey), false)); //gibt der Klasse calcFreqDif einen möglicherweise entschlüsselten String --> encodeString kriegt den verschlüsselten String und versucht ihn mit dem aktuellen Key zu entsclüsseln
 
-
-            if (offset > bestOffset){
+            if (offset > bestOffset) {
                 bestOffset = offset;
-                best = currentKey
-             */
+                //best = currentKey;
+            }
         }
 
-        /*
-        return intToKey(best)
-         */
 
-        return "";
+        return numberToKey(bestKey);
+
+    }
+    public static String encodeString(String s, String keyString, Boolean menu) {
+        String encString = "";
+        for (int i = 0; i < s.length(); i++) {
+            int key = ((int) keyString.charAt(i % keyString.length())) - 65;
+            if (menu) {
+                encString += encode(s.charAt(i), key);
+            } else {
+                encString += encode(s.charAt(i), -key);
+            }
+
+        }
+        return encString;
+    }
+
+    public static char encode(char c, int key) {
+
+        if ((int) c == 32) {
+            return (char) 32; //Checks if a char is a space.
+
+        } else if (((int) c + key) > 90) {
+            return (char) (((int) c + key) - 26);
+
+        } else if (((int) c + key) < 65) {
+            return (char) ((int) c + 26 + key);
+
+        } else {
+            return (char) ((int) c + key);
+
+        }
+    }
+
+    public static double calcFreqDif(String posDecString){ //TODO: Methode um den Unterschied der verschiedenen Buchstaben in ihrer Häufigkeit zu der der deutschen Sprache schreiben
+        double offset = 0;
+
+
+
+
+
+        return offset;
     }
 
 }
