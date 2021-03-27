@@ -5,12 +5,12 @@ public class main {
                 .replace("Ü", "UE")
                 .replace("Ö", "OE")
                 .replace("Ä", "AE")
-                .replace("ß", "SS") //Großes ß ?
+                .replace("ß", "SS")
                 .replaceAll("[ ,.;:'()]","");
         System.out.println(cleanMessage);
-        String key = "test".toUpperCase();
-        String encString = encodeString(cleanMessage, key, true);
-        crackKey(encString, 4);
+        String key = "ei".toUpperCase();
+        String encString = encodeString(cleanMessage, key, true);;
+        crackKey(encString, 2);
 
 
     }
@@ -44,7 +44,12 @@ public class main {
             1.134
     };
     public static String numberToKey(long currentKey){
-        return currentKey < 0 ? "" : numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26); //TODO: verstehen wäre gut xD
+        if (currentKey < 0){
+            return "";
+        } else {
+            return numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26); //TODO: verstehen wäre gut xD
+        }
+        //return currentKey < 0 ? "" : numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26);
     }
 
     public static String crackKey( String encString, int maxKeyLength) {
@@ -52,8 +57,6 @@ public class main {
         long bestKey = 0;
         double bestOffset = Double.MAX_VALUE;
         for (long currentKey = 1; currentKey < Math.pow(27, maxKeyLength); currentKey++){
-            String keyString = numberToKey(currentKey);
-            System.out.println(keyString);
             double offset = calcFreqDif(encodeString(encString, numberToKey(currentKey), false)); //gibt der Klasse calcFreqDif einen möglicherweise entschlüsselten String --> encodeString kriegt den verschlüsselten String und versucht ihn mit dem aktuellen Key zu entsclüsseln
 
             if (offset < bestOffset) {
