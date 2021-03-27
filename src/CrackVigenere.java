@@ -101,6 +101,12 @@ public class CrackVigenere {
 
     public static double calcFreqDif(String posDecString){ //TODO: Methode um den Unterschied der verschiedenen Buchstaben in ihrer Häufigkeit zu der der deutschen Sprache schreiben
         double offset = 0;
+        char[] alphabet = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+        for (int i = 0; i < posDecString.length(); i++) {
+            if(alphabet[i] == posDecString.charAt(i)) {
+                //TODO: Jetzt was damit machen
+            }
+        }
 
 
 
