@@ -1,4 +1,4 @@
-public class main {
+public class CrackVigenere {
     public static void main(String[] args) {
         String rawMessage = "Faust wird von Mephisto zum Hexentanz der Walpurgisnacht auf den Blocksberg gelockt. Sie geraten in eine Windsbraut, ein Gewimmel von Hexen, die zur Bergspitze hinauf reiten, wo der Teufel Hof hält. Faust wünscht sich, bis zum Gipfel vorzudringen: Dort strömt die Menge zu dem Bösen; Da muss sich manches Rätsel lösen. Mephisto aber überredet Faust, stattdessen an einer Hexenfeier teilzunehmen. Er bietet ihm an, dort als Fausts Kuppler zu fungieren. Bald ergehen sich beide im Tanz und anzüglichem Wechselgesang mit zwei lüsternen Hexen. Faust bricht den Tanz ab, als seiner Partnerin ein rotes Mäuschen aus dem Mund springt und ihm ein blasses, schönes Kind erscheint, das ihn an Gretchen erinnert und ein rotes Schnürchen um den Hals trägt (eine Vorausdeutung auf Gretchens Hinrichtung). Um Faust von diesem Zauberbild abzulenken, führt Mephisto ihn auf einen Hügel, wo ein Theaterstück aufgeführt werden soll.".toUpperCase();
         String cleanMessage = rawMessage.toUpperCase()
@@ -9,8 +9,8 @@ public class main {
                 .replaceAll("[ ,.;:'()]","");
         System.out.println(cleanMessage);
         String key = "ei".toUpperCase();
-        String encString = encodeString(cleanMessage, key, true);;
-        crackKey(encString, 2);
+        String encString = encodeString(cleanMessage, key, true);
+        System.out.println(crackKey(encString, 2));
 
 
     }
@@ -57,7 +57,7 @@ public class main {
         long bestKey = 0;
         double bestOffset = Double.MAX_VALUE;
         for (long currentKey = 1; currentKey < Math.pow(27, maxKeyLength); currentKey++){
-            double offset = calcFreqDif(encodeString(encString, numberToKey(currentKey), false)); //gibt der Klasse calcFreqDif einen möglicherweise entschlüsselten String --> encodeString kriegt den verschlüsselten String und versucht ihn mit dem aktuellen Key zu entsclüsseln
+            double offset = calcFreqDif(encodeString(encString, numberToKey(currentKey), false)); //gibt der Klasse calcFreqDif einen möglicherweise entschlüsselten String --> encodeString kriegt den verschlüsselten String und versucht ihn mit dem aktuellen Key zu entschlüsseln
 
             if (offset < bestOffset) {
                 bestOffset = offset;
@@ -67,20 +67,19 @@ public class main {
 
 
         return numberToKey(bestKey);
-
     }
     public static String encodeString(String s, String keyString, Boolean menu) {
-        String encString = "";
+        StringBuilder encString = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             int key = ((int) keyString.charAt(i % keyString.length())) - 65;
             if (menu) {
-                encString += encode(s.charAt(i), key);
+                encString.append(encode(s.charAt(i), key));
             } else {
-                encString += encode(s.charAt(i), -key);
+                encString.append(encode(s.charAt(i), -key));
             }
 
         }
-        return encString;
+        return encString.toString();
     }
 
     public static char encode(char c, int key) {
