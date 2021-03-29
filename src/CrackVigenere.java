@@ -1,19 +1,69 @@
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class CrackVigenere {
     public static void main(String[] args) {
-        String rawMessage = "Faust wird von Mephisto zum Hexentanz der Walpurgisnacht auf den Blocksberg gelockt. Sie geraten in eine Windsbraut, ein Gewimmel von Hexen, die zur Bergspitze hinauf reiten, wo der Teufel Hof hält. Faust wünscht sich, bis zum Gipfel vorzudringen: Dort strömt die Menge zu dem Bösen; Da muss sich manches Rätsel lösen. Mephisto aber überredet Faust, stattdessen an einer Hexenfeier teilzunehmen. Er bietet ihm an, dort als Fausts Kuppler zu fungieren. Bald ergehen sich beide im Tanz und anzüglichem Wechselgesang mit zwei lüsternen Hexen. Faust bricht den Tanz ab, als seiner Partnerin ein rotes Mäuschen aus dem Mund springt und ihm ein blasses, schönes Kind erscheint, das ihn an Gretchen erinnert und ein rotes Schnürchen um den Hals trägt (eine Vorausdeutung auf Gretchens Hinrichtung). Um Faust von diesem Zauberbild abzulenken, führt Mephisto ihn auf einen Hügel, wo ein Theaterstück aufgeführt werden soll.".toUpperCase();
+        System.out.println("Hallo zum Entschlüsselungsprogramm \n Bitte wähle aus ob du entschlüsseln oder verschlüsseln möchtest");
+        System.out.println("[D]ecrypt or [E]ncrypt");
+        Scanner scanner = new Scanner(System.in);
+        menu(scanner);
+    }
+
+    public static void menu(Scanner scanner) {
+        switch (scanner.nextLine()) {
+            case "D", "d" -> decrypt(scanner);
+            case "E", "e" -> encrypt(scanner);
+            default -> {
+                System.out.println("You didn't provide the correct action");
+                menu(scanner);
+            }
+        }
+        System.out.println("Please Enter your next action: [D]ecrypt or [E]ncrypt");
+        menu(scanner);
+    }
+
+    public static void encrypt(Scanner scanner) {
+        System.out.println("Please Enter the text you want to encrypt");
+        String rawMessage = scanner.nextLine();
+        System.out.println("Please enter your key");
+        String key = scanner.nextLine().toUpperCase();
         String cleanMessage = rawMessage.toUpperCase()
                 .replace("Ü", "UE")
                 .replace("Ö", "OE")
                 .replace("Ä", "AE")
                 .replace("ß", "SS")
-                .replaceAll("[^a-z]","");
-        System.out.println(cleanMessage);
-        String key = "hall".toUpperCase();
-        String encString = encodeString(cleanMessage, key, true);
-        System.out.println(crackKey(encString, 4));
+                .replaceAll("[^A-Z]", "");
+        String encMessage = encodeString(cleanMessage, key, true);
+        System.out.println(encMessage);
+    }
 
+
+    public static void decrypt(Scanner scanner) {
+        System.out.println("Please enter your decrypted Text");
+        String rawMessage = scanner.nextLine();
+        String encString = rawMessage.toUpperCase()
+                .replace("Ü", "UE")
+                .replace("Ö", "OE")
+                .replace("Ä", "AE")
+                .replace("ß", "SS")
+                .replaceAll("[^A-Z]", "");
+        System.out.println("Do you know the key? y/n");
+        String yesNo = scanner.nextLine();
+        switch (yesNo) {
+            case "Y", "y" -> {
+                System.out.println("Please Provide it!");
+                String key = scanner.nextLine();
+                encodeString(encString, key, true);
+            }
+            case "N", "n" -> {
+                System.out.println("Please enter the maximum key length you want to look for \n A longer key increases the time to decrypt heavily!");
+                System.out.println(crackKey(encString, scanner.nextInt()));
+            }
+            default -> {
+                System.out.println("You didn't provide the correct action");
+                decrypt(scanner);
+            }
+        }
 
     }
 
@@ -45,20 +95,21 @@ public class CrackVigenere {
             0.039,
             1.134
     };
-    public static String numberToKey(long currentKey){
-        if (currentKey < 0){
+
+    public static String numberToKey(long currentKey) {
+        if (currentKey < 0) {
             return "";
         } else {
-            return numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26); //TODO: verstehen wäre gut xD
+            return numberToKey((currentKey / 26) - 1) + (char) (65 + currentKey % 26); //TODO: verstehen wäre gut xD
         }
         //return currentKey < 0 ? "" : numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26);
     }
 
-    public static String crackKey( String encString, int maxKeyLength) {
+    public static String crackKey(String encString, int maxKeyLength) {
 
         long bestKey = 0;
         double bestOffset = Double.MAX_VALUE;
-        for (long currentKey = 1; currentKey < Math.pow(27, maxKeyLength); currentKey++){
+        for (long currentKey = 1; currentKey < Math.pow(27, maxKeyLength); currentKey++) {
             double offset = calcFreqDif(encodeString(encString, numberToKey(currentKey), false)); //gibt der Klasse calcFreqDif einen möglicherweise entschlüsselten String --> encodeString kriegt den verschlüsselten String und versucht ihn mit dem aktuellen Key zu entschlüsseln
 
             if (offset < bestOffset) {
@@ -70,6 +121,7 @@ public class CrackVigenere {
 
         return numberToKey(bestKey);
     }
+
     public static String encodeString(String s, String keyString, Boolean menu) {
         StringBuilder encString = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
@@ -101,17 +153,17 @@ public class CrackVigenere {
         }
     }
 
-    public static double calcFreqDif(String posDecString){
+    public static double calcFreqDif(String posDecString) {
         char[] pSCArray = posDecString.toCharArray();
         Arrays.sort(pSCArray);
         String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         double actualFreq = 0;
         String msgSorted = (Arrays.toString(pSCArray));
 
-        for (int i = 0; i < alphabet.length() ; i++) {
+        for (int i = 0; i < alphabet.length(); i++) {
             String c = Character.toString(alphabet.charAt(i));
             int charAmount = msgSorted.length() - msgSorted.replace(c, "").length();
-            double offset = (LETTER_FREQUENCIES[i] - charAmount / (double) posDecString.length() );
+            double offset = (LETTER_FREQUENCIES[i] - charAmount / (double) posDecString.length());
             offset *= offset;
             actualFreq += offset;
         }
