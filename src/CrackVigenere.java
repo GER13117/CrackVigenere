@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class CrackVigenere {
     public static void main(String[] args) {
         String rawMessage = "Faust wird von Mephisto zum Hexentanz der Walpurgisnacht auf den Blocksberg gelockt. Sie geraten in eine Windsbraut, ein Gewimmel von Hexen, die zur Bergspitze hinauf reiten, wo der Teufel Hof hält. Faust wünscht sich, bis zum Gipfel vorzudringen: Dort strömt die Menge zu dem Bösen; Da muss sich manches Rätsel lösen. Mephisto aber überredet Faust, stattdessen an einer Hexenfeier teilzunehmen. Er bietet ihm an, dort als Fausts Kuppler zu fungieren. Bald ergehen sich beide im Tanz und anzüglichem Wechselgesang mit zwei lüsternen Hexen. Faust bricht den Tanz ab, als seiner Partnerin ein rotes Mäuschen aus dem Mund springt und ihm ein blasses, schönes Kind erscheint, das ihn an Gretchen erinnert und ein rotes Schnürchen um den Hals trägt (eine Vorausdeutung auf Gretchens Hinrichtung). Um Faust von diesem Zauberbild abzulenken, führt Mephisto ihn auf einen Hügel, wo ein Theaterstück aufgeführt werden soll.".toUpperCase();
@@ -6,11 +8,11 @@ public class CrackVigenere {
                 .replace("Ö", "OE")
                 .replace("Ä", "AE")
                 .replace("ß", "SS")
-                .replaceAll("[ ,.;:'()]","");
+                .replaceAll("[^a-z]","");
         System.out.println(cleanMessage);
-        String key = "ei".toUpperCase();
+        String key = "hall".toUpperCase();
         String encString = encodeString(cleanMessage, key, true);
-        System.out.println(crackKey(encString, 2));
+        System.out.println(crackKey(encString, 4));
 
 
     }
@@ -99,20 +101,22 @@ public class CrackVigenere {
         }
     }
 
-    public static double calcFreqDif(String posDecString){ //TODO: Methode um den Unterschied der verschiedenen Buchstaben in ihrer Häufigkeit zu der der deutschen Sprache schreiben
-        double offset = 0;
-        char[] alphabet = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'}; //TODO: WIE MACHE ICH EIN ARRAY
-        for (int i = 0; i < posDecString.length(); i++) {
-            if(alphabet[i] == posDecString.charAt(i)) {
-                //TODO: Jetzt was damit machen
-            }
+    public static double calcFreqDif(String posDecString){
+        char[] pSCArray = posDecString.toCharArray();
+        Arrays.sort(pSCArray);
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        double actualFreq = 0;
+        String msgSorted = (Arrays.toString(pSCArray));
+
+        for (int i = 0; i < alphabet.length() ; i++) {
+            String c = Character.toString(alphabet.charAt(i));
+            int charAmount = msgSorted.length() - msgSorted.replace(c, "").length();
+            double offset = (LETTER_FREQUENCIES[i] - charAmount / (double) posDecString.length() );
+            offset *= offset;
+            actualFreq += offset;
         }
 
-
-
-
-
-        return offset;
+        return actualFreq / 26D;
     }
 
 }
