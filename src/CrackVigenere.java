@@ -100,13 +100,11 @@ public class CrackVigenere {
         if (currentKey < 0) {
             return "";
         } else {
-            return numberToKey((currentKey / 26) - 1) + (char) (65 + currentKey % 26); //TODO: verstehen wäre gut xD
+            return numberToKey((currentKey / 26) - 1) + (char) (65 + currentKey % 26);
         }
-        //return currentKey < 0 ? "" : numberToKey((currentKey / 26) - 1) + (char)(65 + currentKey % 26);
     }
 
     public static String crackKey(String encString, int maxKeyLength) {
-
         long bestKey = 0;
         double bestOffset = Double.MAX_VALUE;
         for (long currentKey = 1; currentKey < Math.pow(27, maxKeyLength); currentKey++) {
